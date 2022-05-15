@@ -545,6 +545,6 @@ namespace ConsoleUno
 
 
 //basic functionality achived 15/5/2022
-//massive thanks to TheRanger and Sammy Samour, absolute legends
+//massive thanks to TheRanger, Sammy Samour and JetTax absolute legends
 //special thanks to devRant for obvious reasons
 //remember to comment your code fellow devs. have a lovely day
