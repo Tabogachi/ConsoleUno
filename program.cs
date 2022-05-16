@@ -14,7 +14,6 @@ using System.Threading;
  * add computer functionality 😭
  * make title screen actually look a bit more bearable (colors?)
  * add things other than picking up and putting down cards
- * add rules/guide
  * sleep 
  * optimize. lmao dev won't do this
  * comment more code so you know wtf your doing
@@ -38,6 +37,8 @@ namespace ConsoleUno
 
         //storing the players cards
         public static List<(string type, int color)> playerCardsAndColors = new List<(string, int)>();
+        //storing computers cards
+        public static List<(string type, int color)> computerCardsAndColors = new List<(string, int)>();
 
         static void Main(string[] args)
         {
@@ -60,7 +61,7 @@ namespace ConsoleUno
                 case "Uno":
                 case "UNo":
                     getCards();
-
+                    computerCards();
                     break;
                 case "Guide":
                 case "guide":
@@ -104,7 +105,6 @@ namespace ConsoleUno
                         string userCardColorChoice = Console.ReadLine();
                         bool somethingIdk = false;
 
-                        //converting string to int (for the console color)
                         switch (userCardColorChoice)
                         {
                             case "green":
@@ -204,9 +204,10 @@ namespace ConsoleUno
                             //if you enter the wrong card you might have brain damage you moron. ignore commented code here
                             Console.ForegroundColor = ConsoleColor.DarkRed;
                             Console.BackgroundColor = ConsoleColor.Red;
-                            Console.WriteLine("You don't have that card" /*you fucking moron. Kill yourself you failed abortion*/);
+                            Console.WriteLine("You don't have that card" /* you fucking moron. Kill yourself you failed abortion*/);
                             Console.ResetColor();
                         }
+                        ComputerPlay();
                         break;
                 }
             }
@@ -392,13 +393,14 @@ namespace ConsoleUno
                     case "RULES":
                     case "Rules":
                     case "RUles":
+                        Console.WriteLine("-------------------------------------------------------------------------------------");
                         Console.WriteLine("You start UNO with 7 cards each. Your goal is to get rid of all your cards before the" +
                             " other person can. You start first by placing a card down with the command 'play'. \nYou can also pickup with 'pickup'." +
                             " \nIf you've never played uno before, play real life uno first, \nas this experience is not even close to the real thing and " +
                             "is missing a lot of features,\nalso with the other player (bot) playing what ever card is possible." +
                             "\nThank you for taking time to read the rules, now go on to try beat the computer!");
-                        Console.WriteLine("---------------");
-                        Console.WriteLine("press any key to start!");
+                        Console.WriteLine("-------------------------------------------------------------------------------------");
+                        Console.WriteLine("Press any key to start!");
                         Console.ReadKey();
                         getCards();
                         break;
@@ -406,6 +408,15 @@ namespace ConsoleUno
                     case "EMOJIS":
                     case "Emojis":
                     case "EMojis":
+                        Console.WriteLine("\u0030\uFE0F\u20E3 - \u0039\uFE0F\u20E3 | Card numbers");
+                        Console.WriteLine("\U0001F921 | Wild");
+                        Console.WriteLine("\U0001F6AB | Skip");
+                        Console.WriteLine("\u26A1\uFe0f | Pick up 2");
+                        Console.WriteLine("\U0001F4A5 | Pickup 4");
+                        Console.WriteLine("DISCLAIMER: In the real game, wild cards and pickup 4 don't have colors, but the dev is lazy");
+                        Console.WriteLine("-------------------------------------------------------------------------------------");
+                        Console.WriteLine("Press any key to start!");
+                        Console.ReadKey();
                         break;
                 }
                 //getCards();
@@ -482,6 +493,8 @@ namespace ConsoleUno
             //displays the current card (duh). can be changed by the player or computer using "play"
             static void displayCurrentCard()
             {
+                Console.Clear();
+                Console.ResetColor();
                 string emojiType = "";
 
                 //dev istg please fix the stupid emoji thing
@@ -535,6 +548,115 @@ namespace ConsoleUno
                 Console.Write(" " + emojiType + " ");
                 Console.WriteLine("");
                 Console.ResetColor();
+
+            }
+
+            static void ComputerPlay()
+            {
+                bool noMatching = false;
+                Console.WriteLine("\n");
+                foreach (var (type, color) in computerCardsAndColors)
+                {
+                    if (currentCard.Contains(type))
+                    {
+                        currentColor = color;
+                        currentCard = type;
+                        computerCardsAndColors.Remove((type, color));
+                        Console.WriteLine("Computer cards " + computerCardsAndColors.Count());
+                        showCards();
+                        break;
+                    }
+                    else if (currentColor == color)
+                    {
+                        currentColor = color;
+                        currentCard = type;
+                        computerCardsAndColors.Remove((type, color));
+                        Console.WriteLine("Computer cards " + computerCardsAndColors.Count());
+                        showCards();
+                        break;
+                    }
+                    else
+                    {
+                        noMatching = true;
+                    }
+                }
+                if (noMatching)
+                {
+                    Console.WriteLine("No matching");
+                }
+
+            }
+        }
+
+        static void computerCards()
+        {
+
+            //generates 7 cards. adjust the i < 7 to generate any amount. broken if it goes over another line
+            for (int i = 0; i < 7; i++)
+            {
+                Random random = new Random();
+
+                //probably useless messy way to generate random card color and type
+                int cardTypesRand = random.Next(0, possibleTypes.Length);
+                int cardColorsRand = random.Next(0, possibleColors.Length);
+
+                var randColor = possibleColors[cardColorsRand];
+                var randType = possibleTypes[cardTypesRand];
+
+
+                //adding the card to the player deck
+                computerCardsAndColors.Add((randType, randColor));
+
+                string emojiType = "";
+
+                //again more stupid internal to display. dev needs to shorten
+                switch (randType)
+                {
+                    case "0":
+                        emojiType = "\u0030\uFE0F\u20E3";
+                        break;
+                    case "1":
+                        emojiType = "\u0031\uFE0F\u20E3";
+                        break;
+                    case "2":
+                        emojiType = "\u0032\uFE0F\u20E3";
+                        break;
+                    case "3":
+                        emojiType = "\u0033\uFE0F\u20E3";
+                        break;
+                    case "4":
+                        emojiType = "\u0034\uFE0F\u20E3";
+                        break;
+                    case "5":
+                        emojiType = "\u0035\uFE0F\u20E3";
+                        break;
+                    case "6":
+                        emojiType = "\u0036\uFE0F\u20E3";
+                        break;
+                    case "7":
+                        emojiType = "\u0037\uFE0F\u20E3";
+                        break;
+                    case "8":
+                        emojiType = "\u0038\uFE0F\u20E3";
+                        break;
+                    case "9":
+                        emojiType = "\u0039\uFE0F\u20E3";
+                        break;
+                    case "wild":
+                        emojiType = "\U0001F921";
+                        break;
+                    case "skip":
+                        emojiType = "\U0001F6AB";
+                        break;
+                    case "+2":
+                        emojiType = "\u26A1\uFe0f";
+                        break;
+                    case "+4":
+                        emojiType = "\U0001F4A5";
+                        break;
+                }
+
+                var boxLine1 = " " + emojiType + " ";
             }
         }
     }
@@ -545,6 +667,6 @@ namespace ConsoleUno
 
 
 //basic functionality achived 15/5/2022
-//massive thanks to TheRanger, Sammy Samour and JetTax absolute legends
+//massive thanks to TheRanger and Sammy Samour, absolute legends
 //special thanks to devRant for obvious reasons
 //remember to comment your code fellow devs. have a lovely day
